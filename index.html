@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古风舞蹈视频背景生成器</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-overlay"></div>
+  <main class="app">
+    <header>
+      <h1>古风舞蹈视频背景生成器</h1>
+      <p>支持预设、随机灵感、实时预览和历史记录，快速产出可直接使用的背景提示词。</p>
+    </header>
+
+    <section class="panel">
+      <div class="quick-presets" id="presetContainer"></div>
+
+      <form id="promptForm" class="form-grid">
+        <label>
+          场景主题
+          <input id="theme" type="text" placeholder="例如：月下庭院、竹林水榭、宫灯长廊" required />
+        </label>
+
+        <label>
+          时间氛围
+          <select id="timeMood">
+            <option>薄暮微光</option>
+            <option>月夜银辉</option>
+            <option>晨雾初开</option>
+            <option>春日暖阳</option>
+            <option>秋夜微雨</option>
+          </select>
+        </label>
+
+        <label>
+          视觉风格
+          <select id="style">
+            <option>写意国风</option>
+            <option>工笔细腻</option>
+            <option>电影级写实</option>
+            <option>水墨晕染</option>
+            <option>仙侠梦幻</option>
+          </select>
+        </label>
+
+        <label>
+          主色调
+          <input id="palette" type="text" placeholder="例如：青绿 + 金色 + 朱红" />
+        </label>
+
+        <label>
+          镜头运动
+          <select id="camera">
+            <option>缓慢推进</option>
+            <option>横向跟随</option>
+            <option>环绕旋转</option>
+            <option>轻微升降</option>
+            <option>固定长镜头</option>
+          </select>
+        </label>
+
+        <label>
+          画面比例
+          <select id="ratio">
+            <option>16:9 横屏</option>
+            <option>9:16 竖屏</option>
+            <option>1:1 方形</option>
+            <option>21:9 电影宽屏</option>
+          </select>
+        </label>
+
+        <label>
+          运动强度
+          <input id="speed" type="range" min="1" max="5" step="1" value="3" />
+          <span id="speedLabel">中等</span>
+        </label>
+
+        <label>
+          动态光效
+          <select id="lightFx">
+            <option>无</option>
+            <option>萤火流光</option>
+            <option>烛火摇曳</option>
+            <option>水面粼光</option>
+            <option>月华粒子</option>
+          </select>
+        </label>
+
+        <label class="full-row">
+          细节元素
+          <textarea id="details" rows="3" placeholder="例如：飘落花瓣、薄雾、烛火、丝绸帷幔、远山云海"></textarea>
+        </label>
+
+        <label class="full-row">
+          排除项（负面提示词）
+          <input id="negative" type="text" placeholder="例如：人物特写、现代建筑、文字水印、噪点" />
+        </label>
+
+        <div class="btn-row full-row">
+          <button type="submit" class="generate-btn">生成背景提示词</button>
+          <button id="randomBtn" type="button">随机灵感</button>
+          <button id="clearBtn" type="button">清空</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel output-panel">
+      <div class="output-header">
+        <h2>生成结果</h2>
+        <div class="actions">
+          <button id="copyBtn" type="button" disabled>复制</button>
+          <button id="copyEnBtn" type="button" disabled>复制英文</button>
+        </div>
+      </div>
+      <pre id="output">点击“生成背景提示词”后，这里会出现可直接粘贴到视频生成工具的描述词。</pre>
+      <details>
+        <summary>英文 Prompt（适用于大多数文生视频模型）</summary>
+        <pre id="outputEn">Generate once to preview English prompt.</pre>
+      </details>
+    </section>
+
+    <section class="panel history-panel">
+      <div class="output-header">
+        <h2>最近生成历史</h2>
+        <button id="clearHistoryBtn" type="button">清空历史</button>
+      </div>
+      <ul id="historyList"></ul>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
