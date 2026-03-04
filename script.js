@@ -13,6 +13,8 @@ const presetContainer = document.getElementById('presetContainer');
 
 const STORAGE_KEY = 'dance-bg-history-v1';
 const MAX_HISTORY = 8;
+const EMPTY_HINT_CN = '请先填写“场景主题”，其余参数可按需选择。';
+const EMPTY_HINT_EN = 'Please provide a scene theme to generate an English prompt.';
 
 const presets = [
   {
@@ -66,8 +68,19 @@ function speedText(value) {
   return ['很慢', '较慢', '中等', '较快', '快速'][Number(value) - 1];
 }
 
+function resetOutputHint() {
+  output.textContent = EMPTY_HINT_CN;
+  outputEn.textContent = EMPTY_HINT_EN;
+  copyBtn.disabled = true;
+  copyEnBtn.disabled = true;
+}
+
 function buildPrompt() {
   const theme = getValue('theme');
+  if (!theme) {
+    return null;
+  }
+
   const timeMood = getValue('timeMood');
   const style = getValue('style');
   const palette = getValue('palette') || '青黛与暖金渐变';
@@ -108,6 +121,18 @@ function buildPrompt() {
   return { cn, en, theme, timeMood, style };
 }
 
+function renderPrompt(prompt) {
+  if (!prompt) {
+    resetOutputHint();
+    return;
+  }
+
+  output.textContent = prompt.cn;
+  outputEn.textContent = prompt.en;
+  copyBtn.disabled = false;
+  copyEnBtn.disabled = false;
+}
+
 function saveHistory(item) {
   const list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   const next = [item, ...list].slice(0, MAX_HISTORY);
@@ -130,10 +155,7 @@ function renderHistory() {
     btn.type = 'button';
     btn.textContent = `${item.theme} · ${item.style} · ${item.timeMood}`;
     btn.addEventListener('click', () => {
-      output.textContent = item.cn;
-      outputEn.textContent = item.en;
-      copyBtn.disabled = false;
-      copyEnBtn.disabled = false;
+      renderPrompt(item);
     });
     li.appendChild(btn);
     historyList.appendChild(li);
@@ -146,6 +168,7 @@ function applyPreset(preset) {
   setValue('style', preset.style);
   setValue('palette', preset.palette);
   setValue('details', preset.details);
+  renderPrompt(buildPrompt());
 }
 
 function initPresets() {
@@ -169,11 +192,14 @@ function initPresets() {
 form.addEventListener('submit', (event) => {
   event.preventDefault();
   const prompt = buildPrompt();
-  output.textContent = prompt.cn;
-  outputEn.textContent = prompt.en;
-  copyBtn.disabled = false;
-  copyEnBtn.disabled = false;
-  saveHistory(prompt);
+  renderPrompt(prompt);
+  if (prompt) {
+    saveHistory(prompt);
+  }
+});
+
+form.addEventListener('input', () => {
+  renderPrompt(buildPrompt());
 });
 
 copyBtn.addEventListener('click', async () => {
@@ -213,11 +239,13 @@ randomBtn.addEventListener('click', () => {
   setValue('lightFx', ['无', '萤火流光', '烛火摇曳', '水面粼光', '月华粒子'][Math.floor(Math.random() * 5)]);
   speedInput.value = String(Math.floor(Math.random() * 5) + 1);
   speedLabel.textContent = speedText(speedInput.value);
+  renderPrompt(buildPrompt());
 });
 
 clearBtn.addEventListener('click', () => {
   form.reset();
   speedLabel.textContent = speedText(speedInput.value);
+  resetOutputHint();
 });
 
 clearHistoryBtn.addEventListener('click', () => {
@@ -232,3 +260,4 @@ speedInput.addEventListener('input', () => {
 initPresets();
 renderHistory();
 speedLabel.textContent = speedText(speedInput.value);
+resetOutputHint();
